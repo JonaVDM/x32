@@ -29,11 +29,20 @@ func (c *Client) Connect() error {
 		return errors.New("connection already opened")
 	}
 
+	if _, err := net.ResolveUDPAddr("udp", c.Address); err != nil {
+		return err
+	}
+
 	var err error
 	c.Connection, err = net.Dial("udp", c.Address)
+	if err != nil {
+		return err
+	}
+
 	go c.SendLoop()
 	go c.Heartbeat()
-	return err
+
+	return nil
 }
 
 func (c *Client) Close() {
