@@ -3,6 +3,10 @@ package x32
 type Value struct {
 	Type  byte
 	Value []byte
+
+	Float  float32
+	Int    uint
+	String string
 }
 
 type Message struct {

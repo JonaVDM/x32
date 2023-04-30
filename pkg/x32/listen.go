@@ -2,6 +2,7 @@ package x32
 
 import (
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"net"
 )
@@ -72,6 +73,21 @@ func (c *Client) listen() {
 
 					msg.Values[i].Value = append(msg.Values[i].Value, buffer[block:block+4]...)
 				}
+			}
+
+			switch parameterType {
+			case 's':
+				msg.Values[i].String = string(msg.Values[i].Value)
+			case 'i':
+				buffer := bytes.NewReader(msg.Values[i].Value)
+				var num uint
+				binary.Read(buffer, binary.BigEndian, &num)
+				msg.Values[i].Int = num
+			case 'f':
+				buffer := bytes.NewReader(msg.Values[i].Value)
+				var num float32
+				binary.Read(buffer, binary.BigEndian, &num)
+				msg.Values[i].Float = num
 			}
 
 			block += 4
