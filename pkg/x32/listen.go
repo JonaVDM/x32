@@ -2,6 +2,8 @@ package x32
 
 import (
 	"bytes"
+	"errors"
+	"net"
 )
 
 func (c *Client) Subscribe(subscription chan Message) {
@@ -30,7 +32,9 @@ func (c *Client) listen() {
 		buffer := make([]byte, 1024)
 		size, err := c.connection.Read(buffer)
 
-		if err != nil {
+		if err != nil && errors.Is(err, net.ErrClosed) {
+			break
+		} else if err != nil {
 			panic(err)
 		}
 
