@@ -1,7 +1,6 @@
 package x32
 
 import (
-	"bytes"
 	"errors"
 	"net"
 	"time"
@@ -10,7 +9,7 @@ import (
 func NewClient(address string) Client {
 	return Client{
 		Address:       address,
-		Message:       make(chan string),
+		Message:       make(chan Message),
 		StopHeartBeat: make(chan bool),
 		StopSend:      make(chan bool),
 	}
@@ -19,7 +18,7 @@ func NewClient(address string) Client {
 type Client struct {
 	Address       string
 	Connection    net.Conn
-	Message       chan string
+	Message       chan Message
 	StopHeartBeat chan bool
 	StopSend      chan bool
 }
@@ -53,33 +52,16 @@ func (c *Client) Close() {
 	}
 }
 
-func (c *Client) SendLoop() {
-	for {
-		select {
-		case message := <-c.Message:
-			code := []byte(message)
-			code = bytes.ReplaceAll(code, []byte("~"), []byte{0x0})
-			_, err := c.Connection.Write(code)
-			if err != nil {
-				panic(err)
-			}
-
-		case <-c.StopSend:
-			return
-		}
-	}
-}
-
 func (c *Client) Heartbeat() {
 	ticker := time.NewTicker(time.Second * 8)
-	c.Message <- "/xremote"
+	c.Message <- Message{Message: MessageXRemote}
 	for {
 		select {
 		case <-c.StopHeartBeat:
 			return
 
 		case <-ticker.C:
-			c.Message <- "/xremote"
+			c.Message <- Message{Message: MessageXRemote}
 		}
 	}
 }
