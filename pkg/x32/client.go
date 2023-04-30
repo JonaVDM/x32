@@ -8,60 +8,60 @@ import (
 
 func NewClient(address string) Client {
 	return Client{
-		Address:       address,
-		Message:       make(chan Message),
-		StopHeartBeat: make(chan bool),
-		StopSend:      make(chan bool),
+		address:       address,
+		message:       make(chan Message),
+		stopHeartBeat: make(chan bool),
+		stopSend:      make(chan bool),
 	}
 }
 
 type Client struct {
-	Address       string
-	Connection    net.Conn
-	Message       chan Message
-	StopHeartBeat chan bool
-	StopSend      chan bool
+	address       string
+	connection    net.Conn
+	message       chan Message
+	stopHeartBeat chan bool
+	stopSend      chan bool
 }
 
 func (c *Client) Connect() error {
-	if c.Connection != nil {
+	if c.connection != nil {
 		return errors.New("connection already opened")
 	}
 
-	if _, err := net.ResolveUDPAddr("udp", c.Address); err != nil {
+	if _, err := net.ResolveUDPAddr("udp", c.address); err != nil {
 		return err
 	}
 
 	var err error
-	c.Connection, err = net.Dial("udp", c.Address)
+	c.connection, err = net.Dial("udp", c.address)
 	if err != nil {
 		return err
 	}
 
-	go c.SendLoop()
-	go c.Heartbeat()
+	go c.sendLoop()
+	go c.heartbeat()
 
 	return nil
 }
 
 func (c *Client) Close() {
-	if c.Connection != nil {
-		c.StopHeartBeat <- true
-		c.StopSend <- true
-		c.Connection.Close()
+	if c.connection != nil {
+		c.stopHeartBeat <- true
+		c.stopSend <- true
+		c.connection.Close()
 	}
 }
 
-func (c *Client) Heartbeat() {
-	ticker := time.NewTicker(time.Second * 8)
-	c.Message <- Message{Message: MessageXRemote}
+func (c *Client) heartbeat() {
+	ticker := time.NewTicker(time.Second * 9)
+	c.message <- Message{Message: MessageXRemote}
 	for {
 		select {
-		case <-c.StopHeartBeat:
+		case <-c.stopHeartBeat:
 			return
 
 		case <-ticker.C:
-			c.Message <- Message{Message: MessageXRemote}
+			c.message <- Message{Message: MessageXRemote}
 		}
 	}
 }

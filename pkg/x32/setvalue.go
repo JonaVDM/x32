@@ -12,7 +12,7 @@ func (c *Client) SetMixbusFader(channel, mixbus int, value float32) error {
 		return err
 	}
 
-	c.Message <- Message{
+	c.message <- Message{
 		Message: fmt.Sprintf("/ch/%02d/mix/%02d/level", channel, mixbus),
 		Values: []Value{
 			{
@@ -31,7 +31,7 @@ func (c *Client) SetFader(channel int, value float32) error {
 		return err
 	}
 
-	c.Message <- Message{
+	c.message <- Message{
 		Message: fmt.Sprintf("/ch/%02d/mix/fader", channel),
 		Values: []Value{
 			{

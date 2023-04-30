@@ -15,13 +15,13 @@ type Message struct {
 }
 
 func (c *Client) Send(msg Message) {
-	c.Message <- msg
+	c.message <- msg
 }
 
-func (c *Client) SendLoop() {
+func (c *Client) sendLoop() {
 	for {
 		select {
-		case message := <-c.Message:
+		case message := <-c.message:
 			code := utils.PadBytes([]byte(message.Message))
 
 			if len(message.Values) > 0 {
@@ -37,12 +37,12 @@ func (c *Client) SendLoop() {
 				code = append(code, values...)
 			}
 
-			_, err := c.Connection.Write(code)
+			_, err := c.connection.Write(code)
 			if err != nil {
 				panic(err)
 			}
 
-		case <-c.StopSend:
+		case <-c.stopSend:
 			return
 		}
 	}

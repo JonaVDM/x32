@@ -9,7 +9,7 @@ import (
 func (c *Client) Logger() {
 	for {
 		buffer := make([]byte, 1024)
-		size, err := c.Connection.Read(buffer)
+		size, err := c.connection.Read(buffer)
 
 		if err != nil {
 			panic(err)
