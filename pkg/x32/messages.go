@@ -1,5 +1,15 @@
 package x32
 
+type Value struct {
+	Type  byte
+	Value []byte
+}
+
+type Message struct {
+	Message string
+	Values  []Value
+}
+
 const (
 	MessageInfo            string = "/info"
 	MessageXInfo                  = "/xinfo"

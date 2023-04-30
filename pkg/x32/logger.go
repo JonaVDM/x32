@@ -7,49 +7,42 @@ import (
 )
 
 func (c *Client) Logger() {
+	ch := make(chan Message)
+	c.Subscribe(ch)
+	defer func() {
+		c.UnSubscribe(ch)
+		close(ch)
+	}()
+
 	for {
-		buffer := make([]byte, 1024)
-		size, err := c.connection.Read(buffer)
+		msg := <-ch
 
-		if err != nil {
-			panic(err)
+		fmt.Printf("%s", msg.Message)
+		for _, value := range msg.Values {
+			fmt.Printf(" [%c %s]", value.Type, valueToText(value.Type, value.Value))
 		}
-
-		// ignore empty messages
-		if size == 0 {
-			continue
-		}
-
-		index := bytes.Index(buffer, []byte{44})
-		fmt.Printf("%s %c [", buffer[:index], buffer[index+1])
-		fmt.Print(valueToText(buffer[index+1 : size]))
-		fmt.Println("]")
+		fmt.Println("")
 	}
 }
 
-func valueToText(value []byte) string {
-	switch value[0] {
+func valueToText(paramType byte, value []byte) string {
+	switch paramType {
 	case 's':
-		return string(value[3:])
+		return string(value)
 
 	case 'i':
-		buffer := bytes.NewReader(value[3:])
+		buffer := bytes.NewReader(value)
 		var num uint32
 		binary.Read(buffer, binary.BigEndian, &num)
 		return fmt.Sprintf("%d", num)
 
 	case 'f':
-		buffer := bytes.NewReader(value[3:])
+		buffer := bytes.NewReader(value)
 		var num float32
 		binary.Read(buffer, binary.BigEndian, &num)
 		return fmt.Sprintf("%f", num)
 
 	default:
-		out := ""
-		for _, b := range value[2:] {
-			out += fmt.Sprintf("%x ", b)
-		}
-
-		return out
+		return ""
 	}
 }

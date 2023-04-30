@@ -21,6 +21,7 @@ type Client struct {
 	message       chan Message
 	stopHeartBeat chan bool
 	stopSend      chan bool
+	subscriptions []chan Message
 }
 
 func (c *Client) Connect() error {
@@ -40,6 +41,7 @@ func (c *Client) Connect() error {
 
 	go c.sendLoop()
 	go c.heartbeat()
+	go c.listen()
 
 	return nil
 }

@@ -4,16 +4,6 @@ import (
 	"github.com/jonavdm/x32/internal/utils"
 )
 
-type Value struct {
-	Type  byte
-	Value []byte
-}
-
-type Message struct {
-	Message string
-	Values  []Value
-}
-
 func (c *Client) Send(msg Message) {
 	c.message <- msg
 }
