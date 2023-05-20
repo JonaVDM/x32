@@ -5,7 +5,7 @@ type Value struct {
 	Value []byte
 
 	Float  float32
-	Int    uint
+	Int    int32
 	String string
 }
 

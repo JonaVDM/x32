@@ -20,6 +20,8 @@ var logCmd = &cobra.Command{
 			close(ch)
 		}()
 
+		client.Send(x32.Message{Message: "/meters"})
+
 		for {
 			msg := <-ch
 

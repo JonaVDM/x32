@@ -79,10 +79,7 @@ func (c *Client) listen() {
 			case 's':
 				msg.Values[i].String = string(msg.Values[i].Value)
 			case 'i':
-				buffer := bytes.NewReader(msg.Values[i].Value)
-				var num uint
-				binary.Read(buffer, binary.BigEndian, &num)
-				msg.Values[i].Int = num
+				msg.Values[i].Int = int32(binary.BigEndian.Uint32(msg.Values[i].Value))
 			case 'f':
 				buffer := bytes.NewReader(msg.Values[i].Value)
 				var num float32
