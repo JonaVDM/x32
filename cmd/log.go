@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/jonavdm/x32/pkg/x32"
+	"github.com/jonavdm/x32/pkg/osc"
 	"github.com/spf13/cobra"
 )
 
@@ -12,15 +12,15 @@ var logCmd = &cobra.Command{
 	Use:   "log",
 	Short: "Log all the messages send by the console",
 	Run: func(cmd *cobra.Command, args []string) {
-		ch := make(chan x32.Message)
-		client.Subscribe(ch)
+		ch := make(chan osc.Message)
+		client.Connection.Subscribe(ch)
 
 		defer func() {
-			client.UnSubscribe(ch)
+			client.Connection.UnSubscribe(ch)
 			close(ch)
 		}()
 
-		client.Send(x32.Message{Message: "/meters"})
+		client.Connection.Send(osc.Message{Message: "/meters"})
 
 		for {
 			msg := <-ch
@@ -38,7 +38,7 @@ func init() {
 	rootCmd.AddCommand(logCmd)
 }
 
-func valueToText(value x32.Value) string {
+func valueToText(value osc.Value) string {
 	switch value.Type {
 	case 'f':
 		return fmt.Sprintf("%f", value.Float)

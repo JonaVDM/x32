@@ -1,9 +1,11 @@
 package x32
 
 import (
+	"encoding/binary"
 	"fmt"
 
 	"github.com/jonavdm/x32/internal/utils"
+	"github.com/jonavdm/x32/pkg/osc"
 )
 
 func (c *Client) SetMixbusFader(channel, mixbus int, value float32) error {
@@ -12,9 +14,9 @@ func (c *Client) SetMixbusFader(channel, mixbus int, value float32) error {
 		return err
 	}
 
-	c.message <- Message{
+	c.Connection.Message <- osc.Message{
 		Message: fmt.Sprintf("/ch/%02d/mix/%02d/level", channel, mixbus),
-		Values: []Value{
+		Values: []osc.Value{
 			{
 				Type:  'f',
 				Value: bytes,
@@ -31,9 +33,9 @@ func (c *Client) SetFader(channel int, value float32) error {
 		return err
 	}
 
-	c.message <- Message{
+	c.Connection.Message <- osc.Message{
 		Message: fmt.Sprintf("/ch/%02d/mix/fader", channel),
-		Values: []Value{
+		Values: []osc.Value{
 			{
 				Type:  'f',
 				Value: bytes,

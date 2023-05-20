@@ -1,17 +1,17 @@
-package x32
+package osc
 
 import (
 	"github.com/jonavdm/x32/internal/utils"
 )
 
 func (c *Client) Send(msg Message) {
-	c.message <- msg
+	c.Message <- msg
 }
 
 func (c *Client) sendLoop() {
 	for {
 		select {
-		case message := <-c.message:
+		case message := <-c.Message:
 			code := utils.PadBytes([]byte(message.Message))
 
 			if len(message.Values) > 0 {

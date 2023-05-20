@@ -37,10 +37,9 @@ func init() {
 }
 
 func initClient() {
-	client = x32.NewClient(ip + ":" + port)
-
-	// TODO, make the client actually throw an error so we can catch it here
-	if err := client.Connect(); err != nil {
+	var err error
+	client, err = x32.NewClient(ip + ":" + port)
+	if err != nil {
 		fmt.Println("Error: Could not connect to the console")
 		fmt.Println("")
 		fmt.Println(err)

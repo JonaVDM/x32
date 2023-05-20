@@ -1,4 +1,4 @@
-package x32
+package osc
 
 type Value struct {
 	Type  byte
