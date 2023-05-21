@@ -20,7 +20,6 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	defer client.Close()
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
@@ -29,6 +28,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initClient)
+	cobra.OnFinalize(client.Close)
 
 	rootCmd.PersistentFlags().StringVar(&ip, "ip", "", "The IP address of the console")
 	rootCmd.MarkPersistentFlagRequired("ip")
