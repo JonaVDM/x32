@@ -1,7 +1,6 @@
 package x32
 
 import (
-	"encoding/binary"
 	"fmt"
 
 	"github.com/jonavdm/x32/internal/utils"
@@ -43,4 +42,24 @@ func (c *Client) SetFader(channel int, value float32) error {
 		},
 	}
 	return nil
+}
+
+func (c *Client) SetSendOnFader(on bool) {
+	var buf []byte
+
+	if on {
+		buf = []byte{0, 0, 0, 1}
+	} else {
+		buf = []byte{0, 0, 0, 0}
+	}
+
+	c.Connection.Message <- osc.Message{
+		Message: "/-stat/sendsonfader",
+		Values: []osc.Value{
+			{
+				Type:  'i',
+				Value: buf,
+			},
+		},
+	}
 }
