@@ -20,8 +20,6 @@ var logCmd = &cobra.Command{
 			close(ch)
 		}()
 
-		client.Connection.Send(osc.Message{Message: "/meters"})
-
 		for {
 			msg := <-ch
 
